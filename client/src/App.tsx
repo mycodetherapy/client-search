@@ -71,8 +71,6 @@ const App: React.FC = () => {
     }
   };
 
-  console.log("");
-
   return (
     <Container maxWidth="sm" sx={{ padding: 3 }}>
       <Paper elevation={3} sx={{ padding: 2 }}>

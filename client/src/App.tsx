@@ -10,16 +10,14 @@ import {
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import "./App.css";
-
-interface UserData {
-  email: string;
-  number: string;
-}
+import { formatNumber } from "./helpers";
+import { UserData } from "./types";
 
 const App: React.FC = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<UserData>();
   const [result, setResult] = useState<UserData[]>([]);
@@ -77,6 +75,11 @@ const App: React.FC = () => {
     }
   };
 
+  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedValue = formatNumber(e.target.value);
+    setValue("number", formattedValue);
+  };
+
   return (
     <Container maxWidth="sm" sx={{ padding: 3 }}>
       <Paper elevation={3} sx={{ padding: 2 }}>
@@ -111,7 +114,10 @@ const App: React.FC = () => {
             margin="normal"
             error={!!errors.number}
             helperText={errors.number ? errors.number.message : ""}
-            inputProps={{ maxLength: 8 }}
+            inputProps={{
+              maxLength: 8,
+              onChange: handleNumberChange,
+            }}
             {...register("number", {
               pattern: {
                 value: /^(\d{2}-\d{2}-\d{2}|\d{6})$/,

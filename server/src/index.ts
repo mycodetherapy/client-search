@@ -33,15 +33,16 @@ app.post("/api/search", async (req: Request, res: Response) => {
         user.email.toLowerCase() === email.toLowerCase() &&
         (!number || user.number === number)
     );
-    res.json(result);
+
+    if (result.length === 0) {
+      res.json({ message: "Nothing found" });
+    } else {
+      res.json(result);
+    }
   }, 5000);
 
   abortEmitter.once("abort", () => {
     clearTimeout(timeoutId);
-    res.status(500).json({ error: "Request aborted" });
-
-    //Instead of throwing an error, there may be some logic here
-    throw new Error("Request aborted");
   });
 });
 

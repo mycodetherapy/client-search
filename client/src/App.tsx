@@ -16,11 +16,6 @@ interface UserData {
   number: string;
 }
 
-// interface FormData {
-//   email: string;
-//   number: string;
-// }
-
 const App: React.FC = () => {
   const {
     register,
@@ -54,9 +49,14 @@ const App: React.FC = () => {
         signal: newAbortController.signal,
       });
 
-      const resultData: UserData[] = await response.json();
-      if (!resultData.length) setEmptyResult("Nothing found");
-      setResult(resultData);
+      const responseData: UserData[] | { message: string } =
+        await response.json();
+
+      if ("message" in responseData) {
+        setEmptyResult(responseData.message);
+      } else {
+        setResult(responseData);
+      }
     } catch (error: any) {
       if (error.name === "AbortError") {
         console.log("Request canceled.");
@@ -68,6 +68,12 @@ const App: React.FC = () => {
         abortControllerRef.current = null;
       }
       setLoading(false);
+    }
+  };
+
+  const handleEnterPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter") {
+      handleSubmit(onSubmit)();
     }
   };
 
@@ -89,7 +95,6 @@ const App: React.FC = () => {
             fullWidth
             margin="normal"
             error={!!errors.email}
-            disabled={loading}
             helperText={errors.email ? errors.email.message : ""}
             {...register("email", {
               required: "Email is required",
@@ -98,13 +103,13 @@ const App: React.FC = () => {
                 message: "Invalid email address",
               },
             })}
+            onKeyDown={handleEnterPress}
           />
           <TextField
             label="Number"
             fullWidth
             margin="normal"
             error={!!errors.number}
-            disabled={loading}
             helperText={errors.number ? errors.number.message : ""}
             inputProps={{ maxLength: 8 }}
             {...register("number", {
@@ -113,6 +118,7 @@ const App: React.FC = () => {
                 message: "Invalid number format",
               },
             })}
+            onKeyDown={handleEnterPress}
           />
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
             <Button
